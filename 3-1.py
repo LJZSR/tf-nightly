@@ -12,6 +12,9 @@ plt.plot(train_X, train_Y, 'ro', label='Origin data')
 plt.legend()
 plt.show()
 
+#重置图
+tf.reset_default_graph()
+
 #创建模型
 #占位符
 X = tf.placeholder("float")
@@ -31,6 +34,9 @@ init = tf.global_variables_initializer()
 #定义参数
 trainging_epochs = 20
 display_step = 2
+
+saver = tf.train.Saver()
+savedir = 'log/'
 
 #启动session
 with tf.Session() as sess:
@@ -74,3 +80,6 @@ with tf.Session() as sess:
 
     #模型使用
     print("x=0.2, z=", sess.run(z, feed_dict={X: 0.2}))
+    
+    #保存模型
+    saver.save(sess, 'log/linermodel.cpkt')
