@@ -48,7 +48,7 @@ with tf.Session() as sess:
     
     print('Finished!')
 
-#测试model
+    #测试model
     correction_prediction = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
     #计算准确率
     accuracy = tf.reduce_mean(tf.cast(correction_prediction, tf.float32))
