@@ -24,6 +24,8 @@ traing_epochs = 25
 batch_size = 100
 display_step = 1
 
+saver = tf.train.Saver()
+model_path = 'log/521model.ckpt'
 #启动Session
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
@@ -51,4 +53,8 @@ with tf.Session() as sess:
     #计算准确率
     accuracy = tf.reduce_mean(tf.cast(correction_prediction, tf.float32))
     print('Accuracy:', accuracy.eval({x: mnist.test.images, y:mnist.test.labels}))
+
+    #保存模型
+    save_path = saver.save(sess, model_path)
+    print('Model saved in files: %s' %save_path)
 
