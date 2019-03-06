@@ -27,9 +27,14 @@ result5 = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels2)
 with tf.Session() as sess:
     print('rel5=', sess.run(result5))
 
-labels3 = [[2,0.5,6],[0.1,0,3]]
 result6 = tf.log(logits_scaled)
 
 with tf.Session() as sess:
     print('rel6=', sess.run(result6))
     print('rel7=', sess.run(labels*result6))
+
+#sparse标签
+labels = [2,1]
+result8 = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits)
+with tf.Session() as sess:
+    print('rel8=', sess.run(result8))
