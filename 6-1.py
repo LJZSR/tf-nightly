@@ -38,3 +38,11 @@ labels = [2,1]
 result8 = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits)
 with tf.Session() as sess:
     print('rel8=', sess.run(result8))
+
+#计算loss
+labels = labels = [[0,0,1],[0,1,0]]
+loss = tf.reduce_mean(result1)
+loss2 = tf.reduce_mean(-tf.reduce_sum(labels*tf.log(logits_scaled),1))
+with tf.Session() as sess:
+    print('loss1=', sess.run(loss))
+    print('loss2=', sess.run(loss2))
