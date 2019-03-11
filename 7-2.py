@@ -21,18 +21,19 @@ def generate(sample_size, num_classes, mean, cov, diff, regression):
         items = []
         for i in Y0:
             item = np.zeros(num_classes)
-            item[int(i)] = 1
+            item[np.int32(i)] = 1
             items.append(item)
         Y = np.vstack(items)
     #print(X0,Y0)
     #np.random.shuffle(X0)
     #np.random.shuffle(Y0)
-    print(Y)
+    #print(Y)
     return X0, Y
 
 np.random.seed(10)
-input_dim = 2
 num_classes = 3
+input_dim = 2
+lab_dim = num_classes
 mean = np.random.randn(input_dim)
 cov = np.eye(input_dim)
 #print('mean=', mean, 'cov=', cov)
@@ -44,3 +45,41 @@ plt.scatter(X[:,0], X[:,1], c=colors)
 plt.xlabel('Scaled age (in yrs)')
 plt.ylabel('Tumber size (in cm)')
 plt.show()
+
+#定义占位符
+input_features = tf.placeholder(tf.float32, [None, input_dim])
+input_labels = tf.placeholder(tf.float32, [None, lab_dim])
+#定义学习参数
+W = tf.Variable(tf.random_normal([input_dim,lab_dim]), name='weight')
+b = tf.Variable(tf.zeros([lab_dim]), name='bias')
+output = tf.matmul(input_features, W) + b
+
+z = tf.nn.softmax(output)
+
+a1 = tf.argmax(z, axis=1)
+b1 = tf.argmax(input_labels, axis=1)
+err = tf.count_nonzero(a1-b1)
+
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=input_labels, logits=output)
+loss = tf.reduce_mean(cross_entropy)
+
+optimizer = tf.train.AdamOptimizer(0.04)
+train = optimizer.minimize(loss)
+maxEpochs = 50
+minibatchSize = 25
+
+#启动Session
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+
+    for epoch in range(maxEpochs):
+        sumerr = 0
+        for i in range(np.int32(len(Y)/minibatchSize)):
+            X1 = X[i*minibatchSize:(i+1)*minibatchSize,:]
+            Y1 = Y[i*minibatchSize:(i+1)*minibatchSize,:]
+
+            _, lossval, outputval, errval = sess.run([train,loss,output,err], feed_dict={input_features:X1,input_labels:Y1})
+            sumerr += errval/minibatchSize
+            
+        print('Epoch:', '%04d' % (epoch+1), 'loss=', '{:.9f}'.format(lossval), 
+            'err=', sumerr/np.int32(len(Y)/minibatchSize))
