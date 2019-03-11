@@ -20,7 +20,7 @@ def generate(sample_size, mean, cov, diff, regression):
     if not regression:
         class_ind = [Y==class_number for class_number in range(num_classes)]
         Y = np.asarray(np.hstack(class_ind), dtype=np.float32)
-    print(X0,Y0)
+    #print(X0,Y0)
     #np.random.shuffle(X0)
     #np.random.shuffle(Y0)
     #print(X0, Y0)
@@ -70,12 +70,14 @@ with tf.Session() as sess:
             feed_dict={input_features: X1, input_labels: Y1})
             sumerr += errval
         
-        print('Epoch:', '%04d' % (epoch+1), 'cost=', '{:.9f}'.format(lossval), 'err=', sumerr/np.int32(len(Y)/minibatchSize))
+        print('Epoch:', '%04d' % (epoch+1), 'loss=', '{:.9f}'.format(lossval), 'err=', sumerr/np.int32(len(Y)/minibatchSize))
     
     train_X, train_Y = generate(100, mean, cov, [3.0], True)
     colors = ['r' if l==0 else 'b' for l in train_Y]
     plt.scatter(train_X[:,0], train_X[:,1], c=colors)
     x = np.linspace(-1, 8, 200)
+    #print(sess.run(W)[0])
+    #print(sess.run(W)[1])
     y = -(x*(sess.run(W)[0]/sess.run(W)[1]))-sess.run(b)/sess.run(W)[1]
     plt.plot(x, y, label = 'Fitted line')
     plt.legend()
