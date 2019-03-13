@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, ColorConverter
 import tensorflow as tf
 
 def generate(sample_size, num_classes, mean, cov, diff, regression):
@@ -91,10 +92,23 @@ with tf.Session() as sess:
     plt.xlabel('Scaled age (in yrs)')
     plt.ylabel('Tumber size (in cm)')
 
-    x = np.linspace(-1, 8, 200)
-    for i in range(3):
-        y = -(x*(sess.run(W)[0][i]/sess.run(W)[1][i])) - sess.run(b)[i]/sess.run(W)[1][i]
-        plt.plot(x, y, label=str(i+1)+'th line', lw=3-i)
-        
-    plt.legend()
+    nb_of_xs = 200
+    xs1 = np.linspace(-1, 8, num=nb_of_xs)
+    xs2 = np.linspace(-1, 8, num=nb_of_xs)
+    xx, yy = np.meshgrid(xs1, xs2) #创建网络
+    #初始化classification_plane
+    classisfication_plane = np.zeros((nb_of_xs, nb_of_xs))
+    for i in range(nb_of_xs):
+        for j in range(nb_of_xs):
+
+            classisfication_plane[i,j] = sess.run(a1, feed_dict={input_features:[[xx[i,j],yy[i,j]]]})
+
+    #创建color map 用于显示
+    cmap = ListedColormap([
+        ColorConverter.to_rgba('r', alpha=0.3),
+        ColorConverter.to_rgba('b', alpha=0.3),
+        ColorConverter.to_rgba('y', alpha=0.3),
+    ])
+    #图示各个样品边界
+    plt.contourf(xx, yy, classisfication_plane, cmap=cmap)
     plt.show()
