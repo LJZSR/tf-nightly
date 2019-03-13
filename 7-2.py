@@ -7,7 +7,7 @@ def generate(sample_size, num_classes, mean, cov, diff, regression):
     
     X0 = np.random.multivariate_normal(mean, cov, samples_per_class)
     Y0 = np.zeros(samples_per_class)
-    print(X0)
+    #print(X0)
     for ci, d in enumerate(diff):
         X1 = np.random.multivariate_normal(mean+d, cov, samples_per_class)
         #print(ci,d)
@@ -94,7 +94,7 @@ with tf.Session() as sess:
     x = np.linspace(-1, 8, 200)
     for i in range(3):
         y = -(x*(sess.run(W)[0][i]/sess.run(W)[1][i])) - sess.run(b)[i]/sess.run(W)[1][i]
-        plt.plot(x, y, label=str(i)+'th line', lw=3-i)
+        plt.plot(x, y, label=str(i+1)+'th line', lw=3-i)
         
     plt.legend()
     plt.show()
