@@ -10,7 +10,7 @@ def generate(sample_size, num_classes, mean, cov, diff, regression):
     print(X0)
     for ci, d in enumerate(diff):
         X1 = np.random.multivariate_normal(mean+d, cov, samples_per_class)
-        print(ci,d)
+        #print(ci,d)
         Y1 = (ci+1) * np.ones(samples_per_class)
 
         X0 = np.concatenate((X0,X1))
@@ -83,3 +83,18 @@ with tf.Session() as sess:
             
         print('Epoch:', '%04d' % (epoch+1), 'loss=', '{:.9f}'.format(lossval), 
             'err=', sumerr/np.int32(len(Y)/minibatchSize))
+
+    train_X, train_Y = generate(200, num_classes, mean, cov, [[3.0,3.0],[3.0,0.0]], False)
+    aa = [np.argmax(l) for l in train_Y]
+    colors = ['r' if l==0 else 'b' if l==1 else 'y' for l in aa]
+    plt.scatter(train_X[:,0], train_X[:,1], c=colors)
+    plt.xlabel('Scaled age (in yrs)')
+    plt.ylabel('Tumber size (in cm)')
+
+    x = np.linspace(-1, 8, 200)
+    for i in range(3):
+        y = -(x*(sess.run(W)[0][i]/sess.run(W)[1][i])) - sess.run(b)[i]/sess.run(W)[1][i]
+        plt.plot(x, y, label=str(i)+'th line', lw=3-i)
+        
+    plt.legend()
+    plt.show()
