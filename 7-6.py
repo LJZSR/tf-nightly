@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, ColorConverter
 import tensorflow as tf
 
 def generate(sample_size, num_classes, mean, cov, diff, regression):
@@ -55,13 +56,13 @@ plt.scatter(xb[:,0], xr[:,1], c='b', marker='o')
 plt.show()
 X = np.array(X)
 Y = np.array(Y)
-Y = np.reshape(Y, [320,1])
+Y = np.reshape(Y, [-1,1])
 print(Y)
 
 learning_rate = 1e-4
 input_dim  = 2 #输入层节点个数
 n_label = 1 
-n_hidden = 2 #隐藏层节点个数
+n_hidden = 200 #隐藏层节点个数
 
 x = tf.placeholder(tf.float32, [None, input_dim])
 y = tf.placeholder(tf.float32, [None, n_label])
@@ -84,12 +85,44 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 
 #训练
-for i in range(10000):
-    sess.run(train_step, feed_dict={x:X,y:Y})
+for i in range(20000):
+    lossval, _ = sess.run([loss, train_step], feed_dict={x:X,y:Y})
+    print('Step: ', i, 'Current loss:', lossval)
 
-#计算预测值
-print(sess.run(y_pred, feed_dict={x:X}))
+#模型预测结果
+xTrain, yTrain = generate(120, num_classes, mean, cov, [[3.0,0],[3.0,3.0],[0,3.0]],True)
+yTrain = yTrain % 2
+xr = []
+xb = []
+for (l,k) in zip(yTrain[:], xTrain[:]):
+    if l == 0.0:
+        xr.append([k[0], k[1]])
+    else:
+        xb.append([k[0], k[1]])
 
-#查看隐藏层输出
-print(sess.run(layer_1, feed_dict={x:X}))
+xr = np.array(xr)
+xb = np.array(xb)
+plt.scatter(xr[:,0], xr[:,1], c='r', marker='+')
+plt.scatter(xb[:,0], xb[:,1], c='b', marker='o')
+yTrain = np.reshape(yTrain, [-1,1])
+print('loss:\n', sess.run(loss, feed_dict={x:xTrain, y:yTrain}))
+
+nb_of_xs = 200
+xs1 = np.linspace(-1, 8, nb_of_xs)
+xs2 = np.linspace(-1, 8, nb_of_xs)
+xx, yy = np.meshgrid(xs1, xs2)
+#初始和填充classification plane
+classification_plane = np.zeros((nb_of_xs, nb_of_xs))
+for i in range(nb_of_xs):
+    for j in range(nb_of_xs):
+        classification_plane[i,j] = sess.run(y_pred, feed_dict={x:[[xx[i,j],yy[i,j]]]})
+        classification_plane[i,j] = int(classification_plane[i,j])
+    
+#创建一个color map用来显示每一个格子的分类颜色
+cmap = ListedColormap([
+    ColorConverter.to_rgba('r', alpha=0.3),
+    ColorConverter.to_rgba('b', alpha=0.3)
+])
+plt.contourf(xx, yy, classification_plane, cmap=cmap)
+plt.show()
 
