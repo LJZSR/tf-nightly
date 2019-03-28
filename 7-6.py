@@ -89,6 +89,8 @@ for i in range(20000):
     lossval, _ = sess.run([loss, train_step], feed_dict={x:X,y:Y})
     print('Step: ', i, 'Current loss:', lossval)
 
+
+
 #模型预测结果
 xTrain, yTrain = generate(120, num_classes, mean, cov, [[3.0,0],[3.0,3.0],[0,3.0]],True)
 yTrain = yTrain % 2
@@ -115,8 +117,8 @@ xx, yy = np.meshgrid(xs1, xs2)
 classification_plane = np.zeros((nb_of_xs, nb_of_xs))
 for i in range(nb_of_xs):
     for j in range(nb_of_xs):
-        classification_plane[i,j] = sess.run(y_pred, feed_dict={x:[[xx[i,j],yy[i,j]]]})
-        classification_plane[i,j] = int(classification_plane[i,j])
+        classification_plane[i,j] = sess.run(y_pred, feed_dict={x:[[ xx[i,j],yy[i,j] ]]})
+        classification_plane[i,j] = int(classification_plane[i,j]+0.5)
     
 #创建一个color map用来显示每一个格子的分类颜色
 cmap = ListedColormap([
