@@ -38,7 +38,7 @@ mean = np.random.randn(input_dim)
 cov = np.eye(input_dim)
 X, Y = generate(320, num_classes, mean, cov, [[3.0,0],[3.0,3.0],[0,3.0]], True)
 Y = Y % 2
-print(Y)
+#print(Y)
 
 xr = []
 xb = []
@@ -89,6 +89,10 @@ sess.run(tf.global_variables_initializer())
 
 #训练
 for i in range(20000):
+    #增大数据集
+    X, Y = generate(1000,num_classes, mean, cov, [[3.0,0],[3.0,3.0],[0,3.0]], True)
+    Y = Y % 2
+    Y = np.reshape(Y, [-1,1])
     lossval, _ = sess.run([loss, train_step], feed_dict={x:X,y:Y})
     print('Step: ', i, 'Current loss:', lossval)
 
