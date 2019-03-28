@@ -57,7 +57,7 @@ plt.show()
 X = np.array(X)
 Y = np.array(Y)
 Y = np.reshape(Y, [-1,1])
-print(Y)
+#print(Y)
 
 learning_rate = 1e-4
 input_dim  = 2 #输入层节点个数
